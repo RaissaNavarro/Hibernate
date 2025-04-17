@@ -7,39 +7,41 @@ import javax.persistence.Persistence;
 
 public class Main {
     public static void main(String[] args) {
+
+        Categoria escritorio = new Categoria("ESCRITÓRIO");
         //TRANSIENT
-
-        Categoria escritorio = new Categoria("ESCRITORIO");
-        Material caneta = new Material(new MaterialDTO("Caneta", "Só canetas", 3, escritorio));
-
-
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("almoxarifado");
         EntityManager entityManager = JPAUtil.getEntityManager();
-
-        CategoriaDAO categoriaDAO = new CategoriaDAO(entityManager);
         MaterialDAO materialDAO = new MaterialDAO(entityManager);
+        CategoriaDAO categoriaDAO = new CategoriaDAO(entityManager);
+
+        Categoria escritorio = new Categoria("Informatica");
+        Material material = new Material(new MaterialDTO("Monitor", "Só Canetas", 5, escritorio));
+
+        entityManager.getTransaction().begin();
 
 
-        entityManager.getTransaction().begin(); //ele é como se fosse um git init
+        MaterialDAO.lerDadosTabela().forEach(m -> System.out.println(m.getNome()));
 
-        //MANAGED
-        materialDAO.cadastrar(caneta);
-        categoriaDAO.cadastrar(escritorio);
+        entityManager.getTransaction().commit();
+        entityManager.close();
 
-        escritorio.setNome("MATERIAL DE ESCRITÓRIO");
-        entityManager.flush(); // sincroniza o banco com a entidade, é como se fosse um pull pra eles ficarem igual
-        entityManager.clear(); // ele é o oposto do flush, tranfere o estado da entidade para deatched, aq é onde vc quer fazer
-        // as alterações mas nn quer subir pro git ainda
-        
+//        entityManager.getTransaction().begin();
+//        categoriaDAO.cadastrar(escritorio);
+//        //MANAGED //ele so vira managed depoois o persist que estar em cadastrar
+//
+//        escritorio.setNome("MATERIAL DE ESCRITÓRIO");
+//        entityManager.flush();
+//        entityManager.clear();
+//        //DEATCHED
+//        entityManager.merge(escritorio); // ele é o oposto do clear, do deatched pro managed
+//        //MANAGED
+//        escritorio.setNome("MATERIAL");
+//        entityManager.flush();
 
 
 
 
 
-        // ENVIANDO PRO BANCO DE DADOS / COMMIT
-        entityManager.getTransaction().commit(); //como se fosse git commit
-        entityManager.close(); //como se fosse o push finalizando
-        //DEATCHED
 
 
     }
